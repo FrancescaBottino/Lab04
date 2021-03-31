@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class CorsoDAO {
 		final String sql = "SELECT * FROM corso";
 
 		List<Corso> corsi = new LinkedList<Corso>();
+		corsi.add(new Corso("",0,"",0));
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -34,12 +36,15 @@ public class CorsoDAO {
 				String nome = rs.getString("nome");
 				int periodoDidattico = rs.getInt("pd");
 
-				System.out.println(codins + " " + numeroCrediti + " " + nome + " " + periodoDidattico);
-
+				Corso c= new Corso(codins, numeroCrediti, nome, periodoDidattico);
+				corsi.add(c);
+				
 				// Crea un nuovo JAVA Bean Corso
 				// Aggiungi il nuovo oggetto Corso alla lista corsi
 			}
 
+			rs.close();
+			st.close();
 			conn.close();
 			
 			return corsi;
@@ -62,10 +67,118 @@ public class CorsoDAO {
 	/*
 	 * Ottengo tutti gli studenti iscritti al Corso
 	 */
-	public void getStudentiIscrittiAlCorso(Corso corso) {
-		// TODO
+	public List<Studente> getStudentiIscrittiAlCorso(Corso corso) {
+		
+		String sql="select s.matricola, s.cognome, s.nome, s.cds "
+				+ "from corso c, iscrizione i, studente s "
+				+ "where c.codins=i.codins AND i.matricola= s.matricola AND c.nome=? ";
+		
+		List<Studente> result= new ArrayList<Studente>();
+		
+		String nomeCorso=corso.getNome();
+		
+		try {
+			Connection conn= ConnectDB.getConnection();
+			PreparedStatement st= conn.prepareStatement(sql);
+			st.setString(1, nomeCorso);
+			
+			ResultSet rs= st.executeQuery();
+			
+			while(rs.next()) {
+				
+				Studente s= new Studente(rs.getInt("matricola"), rs.getString("cognome"), rs.getString("nome"), rs.getString("cds"));
+				result.add(s);
+				
+			}
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
+			
+		}catch(SQLException e) {
+			
+			throw new RuntimeException(e);
+		}
+		
+		return result;
+		
+		
 	}
+	
 
+	public List<Corso> getCercaCorsi(String matricola){
+		
+		//cercare se studente è iscritto al database
+		//se si cercare i corsi a cui è iscritta la matricola
+		
+		
+		String sql="select c.codins, c.crediti, c.nome, c.pd "
+				+ "from corso c, iscrizione i "
+				+ "where c.codins=i.codins AND i.matricola=? ";
+		
+		List<Corso> result=new ArrayList<Corso>();
+		
+		try {
+			
+			Connection conn=ConnectDB.getConnection();
+			PreparedStatement st=conn.prepareStatement(sql);
+			st.setString(1, matricola);
+			
+			ResultSet rs=st.executeQuery();
+			
+			while(rs.next()) {
+			
+				Corso c= new Corso(rs.getString("codins"), rs.getInt("crediti"), rs.getString("nome"), rs.getInt("pd"));
+				result.add(c);
+				
+			}
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
+		}catch(SQLException e) {
+			
+			throw new RuntimeException(e);
+		}
+		
+		return result;
+		
+	}
+	
+	public boolean cercaStudenteIscrittoCorso(String matricola, Corso c) {
+		
+		boolean flag=false;
+		
+		String sql="select c.nome, s.matricola "
+				+ "from corso c, iscrizione i, studente s "
+				+ "where c.codins=i.codins AND i.matricola=s.matricola AND c.nome=? AND s.matricola=? ";
+		
+		
+		try {
+			Connection conn=ConnectDB.getConnection();
+			PreparedStatement st=conn.prepareStatement(sql);
+			st.setString(1, c.getNome());
+			st.setString(2, matricola);
+			
+			ResultSet rs=st.executeQuery();
+			
+			while (rs.next()) {
+				
+				flag=true;
+				
+			}
+		}catch(SQLException e) {
+			
+			throw new RuntimeException(e);
+		}
+		
+		return flag;
+		
+	}
+	
+	
 	/*
 	 * Data una matricola ed il codice insegnamento, iscrivi lo studente al corso.
 	 */
