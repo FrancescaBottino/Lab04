@@ -164,7 +164,7 @@ public class CorsoDAO {
 			
 			ResultSet rs=st.executeQuery();
 			
-			while (rs.next()) {
+			if(rs.next()) {
 				
 				flag=true;
 				

@@ -61,9 +61,7 @@ public class FXMLController {
     	if(s==null) {
     		txtRisultato.setText("Lo studente non è presente nel database");
     	}
-    	
-    	String str="";	
-    	
+    		
     	List<Corso> result=this.model.getCercaCorsi(matricola);
     	
     	if(result.size()==0) {
@@ -71,13 +69,19 @@ public class FXMLController {
     		return;
     	}
     	
+    	StringBuilder sb=new StringBuilder();
+    	
     	for(Corso c: result) {
     	
-    		str+=c.toString2();
+    		sb.append(String.format("%-8s ", c.getCodins()));
+        	sb.append(String.format("%-4d ", c.getCrediti()));
+        	sb.append(String.format("%-50s ", c.getNome()));
+        	sb.append(String.format("%-4d\n", c.getPd()));
+        	
     	}
     	
-    	txtRisultato.setText(str);
-    		
+    	txtRisultato.appendText(sb.toString());
+    	
 
     }
 
@@ -96,8 +100,6 @@ public class FXMLController {
     		txtRisultato.setText("Nessun corso è stato selezionato");
     		return;
     	}
-    	
-    	String str="";
     			
     	List<Studente> studenti=this.model.getStudentiIscrittiAlCorso(c);
     	
@@ -106,11 +108,17 @@ public class FXMLController {
     		return;
     	}
     	
+    	StringBuilder sb=new StringBuilder();
+    	
+    	
     	for(Studente s: studenti) {
-    		str+=s.toString();
+    		sb.append(String.format("%-10d ", s.getMatricola()));
+    		sb.append(String.format("%-20s ", s.getCognome()));
+    		sb.append(String.format("%-25s ", s.getNome()));
+    		sb.append(String.format("%-10s\n", s.getCds()));
     	}
     
-    	txtRisultato.setText(str);
+    	txtRisultato.appendText(sb.toString());
 
     }
 
@@ -161,6 +169,9 @@ public class FXMLController {
     	}
     	else {
     		txtRisultato.setText("Lo studente non è iscritto a questo corso");
+    		btnIscrivi.setText("Iscrivi");
+    		//se lo schiaccia iscrive lo studente
+    		
     	}
 
     }
@@ -193,6 +204,7 @@ public class FXMLController {
     	this.model=model;
     	
     	this.scegliCorsoBox.getItems().addAll(this.model.getTuttiICorsi());
+    	txtRisultato.setStyle("-fx-font-family: monospace"); 
     	
     	
     }
