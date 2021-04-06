@@ -170,7 +170,13 @@ public class FXMLController {
     	else {
     		txtRisultato.setText("Lo studente non è iscritto a questo corso");
     		btnIscrivi.setText("Iscrivi");
+    		
     		//se lo schiaccia iscrive lo studente
+    		
+    		boolean t=this.model.inscriviStudenteACorso(s, c);
+    		if(t==true) {
+    		txtRisultato.setText("Studente iscritto a questo corso!");
+    		}
     		
     	}
 
@@ -187,6 +193,7 @@ public class FXMLController {
     	btnCercaCorsi.setDisable(false);
     	btnCercaIscrittiCorso.setDisable(false);
     	txtMatricola.setDisable(false);
+    	btnIscrivi.setText("Cerca");
 
     }
 

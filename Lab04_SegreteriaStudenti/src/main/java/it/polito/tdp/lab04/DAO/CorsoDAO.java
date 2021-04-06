@@ -169,12 +169,18 @@ public class CorsoDAO {
 				flag=true;
 				
 			}
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
 		}catch(SQLException e) {
 			
 			throw new RuntimeException(e);
 		}
 		
 		return flag;
+		
 		
 	}
 	
@@ -185,7 +191,37 @@ public class CorsoDAO {
 	public boolean inscriviStudenteACorso(Studente studente, Corso corso) {
 		// TODO
 		// ritorna true se l'iscrizione e' avvenuta con successo
-		return false;
+		
+		boolean flag=false;
+		
+        String sql= "INSERT INTO iscrizione "
+				+ "VALUES (?, ?) ";
+        
+        try {
+			Connection conn=ConnectDB.getConnection();
+			PreparedStatement st=conn.prepareStatement(sql);
+			st.setInt(1, studente.getMatricola());
+			st.setString(2, corso.getCodins());
+			
+			ResultSet rs=st.executeQuery();
+			
+			if(rs.next()) {
+				
+				flag=true;
+				
+			}
+			
+			rs.close();
+			st.close();
+			conn.close();
+			
+		}catch(SQLException e) {
+			
+			throw new RuntimeException(e);
+		}
+		
+		return flag;
+        
 	}
 
 }

@@ -41,4 +41,9 @@ public class Model {
 		return corsoDao.cercaStudenteIscrittoCorso(matricola, c);
 	}
 	
+	public boolean inscriviStudenteACorso(Studente studente, Corso corso) {
+		
+		return corsoDao.inscriviStudenteACorso(studente, corso);
+	}
+	
 }
